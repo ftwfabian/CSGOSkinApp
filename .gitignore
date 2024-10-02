@@ -1,0 +1,141 @@
+# .NET Core
+bin/
+obj/
+*.user
+*.userosscache
+*.suo
+*.userprefs
+*.dbmdl
+*.jfm
+*._i.c
+*._p.c
+*.nlp
+*.plg
+*.pch
+*.pdb
+*.pgc
+*.pgd
+*.rsp
+*.sbr
+*.tlb
+*.tli
+*.tlh
+*.tmp
+*.tmp_proj
+*_wpftmp.csproj
+*.log
+*.vspscc
+*.vssscc
+.builds
+*.pidb
+*.svclog
+*.scc
+
+# Visual Studio files
+.vs/
+.vscode/
+*.nupkg
+*.pfx
+*.snk
+
+# Rider
+.idea/
+
+# User-specific files
+*.rsuser
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# .NET Scaffolding
+ScaffoldingReadMe.txt
+
+# SQL Server files
+*.mdf
+*.ldf
+*.ndf
+
+# Node.js / Svelte
+ClientApp/node_modules/
+ClientApp/.svelte-kit/
+ClientApp/package-lock.json
+ClientApp/yarn.lock
+ClientApp/pnpm-lock.yaml
+
+# Build results
+ClientApp/public/build/
+ClientApp/build/
+
+# Environment files
+.env
+.env.*
+!.env.example
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Editor directories and files
+.idea
+*.swp
+*.swo
+*~
+
+# SQLite database files
+*.db
+*.sqlite
+*.sqlite3
+
+# Temporary files
+*.bak
+*.cache
+*.tmp
+
+# Compiled source
+*.com
+*.class
+*.dll
+*.exe
+*.o
+*.so
+
+# NuGet Packages Directory
+packages/
+
+# Visual Studio Code directories
+.vscode/
+
+# Windows image file caches
+Thumbs.db
+ehthumbs.db
+
+# Folder config file
+Desktop.ini
+
+# Recycle Bin used on file shares
+$RECYCLE.BIN/
+
+# VS Code directories
+.vscode/
+
+# Windows Installer files
+*.cab
+*.msi
+*.msm
+*.msp
+
+# Windows shortcuts
+*.lnk
