@@ -3,15 +3,9 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.EntityFrameworkCore;
 using CSGOSkinApp.Data;
-using Microsoft.Extensions.FileProviders;
+using CSGOSkinApp.Services;
 
-var webApplicationOptions = new WebApplicationOptions
-{
-    ContentRootPath = Directory.GetCurrentDirectory(),
-    WebRootPath = Path.Combine(Directory.GetCurrentDirectory(), "ClientApp", "public")
-};
-
-var builder = WebApplication.CreateBuilder(webApplicationOptions);
+var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllers();
@@ -21,6 +15,16 @@ builder.Services.AddSwaggerGen();
 // Add DbContext
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
+builder.Services.AddScoped<ISkinService, SkinService>();
+
+// Add CORS
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowSvelteApp",
+        builder => builder.WithOrigins("http://localhost:8080") // Adjust if your Svelte app runs on a different port
+                          .AllowAnyHeader()
+                          .AllowAnyMethod());
+});
 
 var app = builder.Build();
 
@@ -31,18 +35,12 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseHttpsRedirection();
+//app.UseHttpsRedirection();
 
-// Use static files
-app.UseStaticFiles();
-
-app.UseRouting();
+app.UseCors("AllowSvelteApp");
 
 app.UseAuthorization();
 
 app.MapControllers();
-
-// Serve Svelte app for any non-API routes
-app.MapFallbackToFile("index.html");
 
 app.Run();
