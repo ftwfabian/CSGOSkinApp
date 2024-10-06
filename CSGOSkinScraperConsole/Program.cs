@@ -48,15 +48,19 @@ public interface IMyConsoleService
 public class MyConsoleService : IMyConsoleService
 {
     private readonly SkinScraper _skinScraper;
+    private readonly SkinCleaner _skinCleaner;
 
-    public MyConsoleService(SkinScraper skinScraper)
+    public MyConsoleService(SkinScraper skinScraper, SkinCleaner skinCleaner)
     {
         _skinScraper = skinScraper;
+        _skinCleaner = skinCleaner;
     }
 
     public async Task RunAsync()
     {
-        await _skinScraper.ScrapeSkins();
-        Console.WriteLine("Scraping completed successfully.");
+        //await _skinScraper.ScrapeSkins();
+        //Console.WriteLine("Scraping completed successfully.");
+        await _skinCleaner.CleanWeaponAndConditionOffOfNameAsync();
     }
+
 }

@@ -1,52 +1,58 @@
 using CSGOSkinApp.Data;
 using CSGOSkinApp.Entities;
 using Microsoft.EntityFrameworkCore;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace CSGOSkinApp.Services
 {
-    public class SkinService: ISkinService
+    public class SkinService : ISkinService
     {
         private readonly AppDbContext _context;
         public SkinService(AppDbContext context)
-        {   
+        {
             _context = context;
         }
+
         public async Task<List<Skin>> GetAllViaNameSubstring(string nameSubstring)
         {
-            string[] substrings = nameSubstring.Split(' ', StringSplitOptions.RemoveEmptyEntries);
-            substrings = substrings.Select(s => s.Trim().ToLower()).ToArray();
-            if(!nameSubstring.Contains("stat"))
-            {
-                var groupedSkins = await _context.Skins
-                    .Where(skin => substrings.All(substring => skin.Name.ToLower().Contains(substring)) && !skin.Name.ToLower().Contains("stattrak"))
-                    .GroupBy(skin => skin.Name)
-                    .Select(group => new
-                    {
-                        SkinName = group.Key,
-                        Skins = group.GroupBy(s => s.Weapon)
-                                    .FirstOrDefault()
-                                    .Select(s => s)
-                    })
-                    .ToListAsync();
+            string[] substrings = nameSubstring.Split(' ', StringSplitOptions.RemoveEmptyEntries)
+                                               .Select(s => s.Trim().ToLower())
+                                               .ToArray();
 
-                return groupedSkins.SelectMany(g => g.Skins).ToList();
-            }
-            else 
-            {
-                var groupedSkins = await _context.Skins
-                    .Where(skin => substrings.All(substring => skin.Name.ToLower().Contains(substring)) && skin.Name.ToLower().Contains("stattrak"))
-                    .GroupBy(skin => skin.Name)
-                    .Select(group => new
-                    {
-                        SkinName = group.Key,
-                        Skins = group.GroupBy(s => s.Weapon)
-                                    .FirstOrDefault()
-                                    .Select(s => s)
-                    })
-                    .ToListAsync();
+            bool includeStatTrak = nameSubstring.Contains("stat", StringComparison.OrdinalIgnoreCase);
 
-                return groupedSkins.SelectMany(g => g.Skins).ToList();
+            // Initial query to filter skins
+            var query = _context.Skins.AsNoTracking()
+                .Where(skin => substrings.All(substring => skin.Name.ToLower().Contains(substring)));
+
+            // Apply StatTrak filter
+            if (includeStatTrak)
+            {
+                query = query.Where(skin => skin.Name.ToLower().Contains("stattrak"));
             }
+            else
+            {
+                query = query.Where(skin => !skin.Name.ToLower().Contains("stattrak"));
+            }
+
+            // Execute the query and bring results into memory
+            var filteredSkins = await query.ToListAsync();
+
+            // Perform grouping and selection in memory
+            var groupedSkins = filteredSkins
+                .GroupBy(skin => skin.Name)
+                .Select(group => new
+                {
+                    SkinName = group.Key,
+                    Skins = group.GroupBy(s => s.Weapon)
+                                 .FirstOrDefault()?
+                                 .ToList() ?? new List<Skin>()
+                })
+                .ToList();
+
+            // Flatten the result
+            return groupedSkins.SelectMany(g => g.Skins).ToList();
         }
     }
 }
