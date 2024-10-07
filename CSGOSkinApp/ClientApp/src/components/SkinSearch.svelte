@@ -22,7 +22,7 @@
     <input
         type = "text"
         bind:value={searchSkinName}
-        placeholder="Search for a skin"
+        placeholder="Use keywords like 'stat fac night' to get results for StatTrak Factory New AK-47 Nightwish"
         on:keydown={handleKeyDown}
     />
     <button on:click={handleSearch} class="btn btn-primary">Search</button>

@@ -6,6 +6,7 @@ import { get } from 'svelte/store';
 import SkinSearch from './SkinSearch.svelte';
 
 export let skinName = '';
+let skinImageLink = '';
 let chartCanvas;
 let chart;
 let error = null;
@@ -89,6 +90,7 @@ async function updateChart() {
     try {
         chartData = await fetchSkinData(skinName);
         skinName = chartData[0].name;
+        skinImageLink = chartData[0].url;
         createChart();
     } catch (err) {
         console.error('Error updating chart:', err);
@@ -118,22 +120,24 @@ $: if (chartCanvas && chartData) {
 </script>
 
 <main>
-    <SkinSearch on:search={handleSearch}/>
     <div class="chart-box">
+        <SkinSearch on:search={handleSearch}/>
+        <br/>
         <h1>{skinName ? `${skinName} Price vs Float` : 'Search for a skin'}</h1>
         {#if isLoading}
             <p>Loading...</p>
         {:else if error}
             <p class="error">{error}</p>
         {:else if !skinName}
-            <p>Search for a skin to display the chart.</p>
-            <p>Like "Night Stat Fac" to get AK-47 StatTrak Factory New Nightwish</p>
+            <p>...</p>
         {:else}
             <div class="chart-container">
                 <canvas bind:this={chartCanvas}></canvas>
             </div>
+            
         {/if}
     </div>
+    <img src={skinImageLink}/>
 </main>
 
 <style>
@@ -147,7 +151,7 @@ $: if (chartCanvas && chartData) {
       background-color: white;
       border-radius: 8px;
       padding: 20px;
-      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+      box-shadow: 0 0 6px rgba(0,0,0,0.1);
       margin-bottom: 20px;
   }
 

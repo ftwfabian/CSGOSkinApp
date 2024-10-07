@@ -14,7 +14,7 @@ namespace CSGOSkinApp.Services
             _context = context;
         }
 
-        public async Task<List<Skin>> GetAllViaNameSubstring(string nameSubstring)
+        public async Task<List<Skin?>> GetAllViaNameSubstring(string nameSubstring)
         {
             string[] substrings = nameSubstring.Split(' ', StringSplitOptions.RemoveEmptyEntries)
                                                .Select(s => s.Trim().ToLower())
@@ -36,23 +36,16 @@ namespace CSGOSkinApp.Services
                 query = query.Where(skin => !skin.Name.ToLower().Contains("stattrak"));
             }
 
-            // Execute the query and bring results into memory
-            var filteredSkins = await query.ToListAsync();
-
-            // Perform grouping and selection in memory
-            var groupedSkins = filteredSkins
+            // Execute the query and group by name
+            var groupedSkins = await query
                 .GroupBy(skin => skin.Name)
-                .Select(group => new
-                {
+                .Select(group => new{
                     SkinName = group.Key,
-                    Skins = group.GroupBy(s => s.Weapon)
-                                 .FirstOrDefault()?
-                                 .ToList() ?? new List<Skin>()
+                    Skins = group.ToList()
                 })
-                .ToList();
+                .FirstOrDefaultAsync();
 
-            // Flatten the result
-            return groupedSkins.SelectMany(g => g.Skins).ToList();
+            return groupedSkins?.Skins ?? new List<Skin>();
         }
     }
 }
