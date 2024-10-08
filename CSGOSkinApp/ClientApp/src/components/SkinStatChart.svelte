@@ -151,8 +151,8 @@ $: if (chartCanvas && chartData) {
       background-color: white;
       border-radius: 8px;
       padding: 20px;
-      box-shadow: 0 0 6px rgba(0,0,0,0.1);
-      margin-bottom: 20px;
+      box-shadow: 0 6px 6px rgba(0,0,0,0.1);
+      margin-bottom: 5px;
   }
 
   h1 {

@@ -8,42 +8,19 @@
     
     export let url = "";
 
-    let isFirstLoad = true;
-
-    function handleVisibilityChange() {
-        if (document.visibilityState === 'visible') {
-            const lastPageHide = sessionStorage.getItem('lastPageHide');
-            const now = Date.now();
-            
-            if (lastPageHide && (now - parseInt(lastPageHide) < 50)) {
-                // This is likely a page refresh
-                navigate("/", { replace: true });
-            }
-        }
-    }
-
-    beforeUpdate(() => {
-        if (isFirstLoad) {
-            document.addEventListener('visibilitychange', handleVisibilityChange);
-            isFirstLoad = false;
-        }
-    });
-
-    onMount(() => {
-        return () => {
-            document.removeEventListener('visibilitychange', handleVisibilityChange);
-        };
-    });
 </script>
 
 <svelte:window on:pagehide={() => sessionStorage.setItem('lastPageHide', Date.now().toString())} />
 
 <Router {url}>
 <main>
-    <nav>
-        <Link to="/">Home</Link>
-		<Link to="/Skin">Skin</Link>
-    </nav>
+	<div class = "navbar-box">
+		<nav>
+			<Link to="/">Home</Link>
+			<Link to="/Skin">Skin</Link>
+		</nav>
+	</div>
+	<br/>
 
     <Route path="/">
         <HomePage/>
@@ -62,13 +39,37 @@
         margin: 0 auto;
     }
 
+	.navbar-box {
+        background-color: white;
+        border-radius: 3px;
+        box-shadow: 0 6px 6px rgba(0,0,0,0.1);
+        margin: 0 auto 1em auto;
+        width: 20%;
+        height: 30px; /* Adjust this value as needed */
+    }
+
     nav {
-        margin-bottom: 1em;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100%;
     }
 
     nav :global(a) {
         margin-right: 1em;
     }
+
+	.navbar-box {
+      background-color: white;
+      border-radius: 8px;
+      padding: 1px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+	  margin-left: auto;
+	  margin-right: auto;
+	  margin: 0 auto;
+	  width: 20%;
+	  
+  	}
 
     @media (min-width: 640px) {
         main {
