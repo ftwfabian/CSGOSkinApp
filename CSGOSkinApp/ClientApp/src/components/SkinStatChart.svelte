@@ -51,7 +51,7 @@ function createChart() {
                     x: item.float,
                     y: item.marketPrice
                 })),
-                backgroundColor: 'rgba(75, 192, 192, 0.6)'
+                backgroundColor: 'rgba(240, 128, 128, 0.6)'
             }]
         },
         options: {
@@ -120,31 +120,43 @@ $: if (chartCanvas && chartData) {
 </script>
 
 <main>
-    <div class="chart-box">
-        <SkinSearch on:search={handleSearch}/>
-        <br/>
-        <h1>{skinName ? `${skinName} Price vs Float` : 'Search for a skin'}</h1>
-        {#if isLoading}
-            <p>Loading...</p>
-        {:else if error}
-            <p class="error">{error}</p>
-        {:else if !skinName}
-            <p>...</p>
-        {:else}
-            <div class="chart-container">
-                <canvas bind:this={chartCanvas}></canvas>
+    <div class="content-wrapper">
+        <div class="chart-box">
+            <SkinSearch on:search={handleSearch}/>
+            <br/>
+            <h1>{skinName ? `${skinName} Price vs Float` : 'Search for a skin'}</h1>
+            {#if isLoading}
+                <p>Loading...</p>
+            {:else if error}
+                <p class="error">{error}</p>
+            {:else if !skinName}
+                <p>...</p>
+            {:else}
+                <div class="chart-container">
+                    <canvas bind:this={chartCanvas}></canvas>
+                </div>
+            {/if}
+        </div>
+        {#if skinImageLink}
+            <div class="image-container">
+                <img src={skinImageLink} alt={skinName} />
             </div>
-            
         {/if}
     </div>
-    <img src={skinImageLink}/>
 </main>
 
 <style>
   main {
-      max-width: 1000px;
+      max-width: 1200px;
       margin: 0 auto;
       padding: 20px;
+      color: rgb(240, 128, 128);
+  }
+
+  .content-wrapper {
+      display: flex;
+      align-items: flex-start;
+      gap: 20px;
   }
 
   .chart-box {
@@ -152,7 +164,8 @@ $: if (chartCanvas && chartData) {
       border-radius: 8px;
       padding: 20px;
       box-shadow: 0 6px 6px rgba(0,0,0,0.1);
-      margin-bottom: 5px;
+      flex: 1;
+      max-width: 50%;
   }
 
   h1 {
@@ -170,5 +183,18 @@ $: if (chartCanvas && chartData) {
   .error {
       color: red;
       text-align: center;
+  }
+
+  .image-container {
+      flex: 0 0 auto;
+      width: 40%;
+  }
+
+  .image-container img {
+    padding-top: 35%;
+      width: 100%;
+      height: auto;
+      transform: rotate(45deg);
+      transform-origin: center center;
   }
 </style>
