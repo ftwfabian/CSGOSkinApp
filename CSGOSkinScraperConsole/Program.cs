@@ -36,7 +36,7 @@ IHostBuilder CreateHostBuilder(string[] args) =>
         {
             services.AddDbContext<AppDbContext>(options =>
                 options.UseSqlite(hostContext.Configuration.GetConnectionString("DefaultConnection")));
-            services.AddScoped<SkinScraper>();
+            services.AddScoped<SkinScraperDMarket>();
             services.AddTransient<IMyConsoleService, MyConsoleService>();
         });
 
@@ -47,20 +47,19 @@ public interface IMyConsoleService
 
 public class MyConsoleService : IMyConsoleService
 {
-    private readonly SkinScraper _skinScraper;
-    private readonly SkinCleaner _skinCleaner;
+    private readonly SkinScraperDMarket _skinScraper;
 
-    public MyConsoleService(SkinScraper skinScraper, SkinCleaner skinCleaner)
+    public MyConsoleService(SkinScraperDMarket skinScraper)
     {
         _skinScraper = skinScraper;
-        _skinCleaner = skinCleaner;
     }
 
     public async Task RunAsync()
     {
-        //await _skinScraper.ScrapeSkins();
-        //Console.WriteLine("Scraping completed successfully.");
-        await _skinCleaner.CleanWeaponAndConditionOffOfNameAsync();
+        await _skinScraper.ScrapeSkins("AK-47");
+        await _skinScraper.CleanseScrapingOfNonGunsAndNonStickers();
+        Console.WriteLine("Scraping completed successfully.");
+        //await _skinCleaner.CleanWeaponAndConditionOffOfNameAsync();
     }
 
 }

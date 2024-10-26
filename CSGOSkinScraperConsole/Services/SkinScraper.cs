@@ -10,29 +10,77 @@ using Microsoft.EntityFrameworkCore;
 
 namespace CSGOSkinApp.Services
 {
-    public class SkinScraper
+    public class SkinScraperDMarket
     {
         private static readonly HttpClient _httpClient = new HttpClient();
         private readonly AppDbContext _context;
-        private readonly ILogger<SkinScraper> _logger;
+        private readonly ILogger<SkinScraperDMarket> _logger;
 
-        public SkinScraper(AppDbContext context, ILogger<SkinScraper> logger)
+        public SkinScraperDMarket(AppDbContext context, ILogger<SkinScraperDMarket> logger)
         {
             _context = context;
             _logger = logger;
             _httpClient.BaseAddress = new Uri("https://api.dmarket.com");
         }
 
-        public async Task ScrapeSkins(int limit = 100)
+        public async Task ScrapeSkins(string title)
         {
             string? cursor = null;
             int totalScraped = 0;
-
             do
             {
                 try
                 {
-                    string endpoint = $"exchange/v1/market/items?gameId=a8db&title=AK-47&limit={limit}&orderBy=updated&orderDir=desc&currency=USD";
+                    string endpoint = $"exchange/v1/market/items?gameId=a8db&title={title}&limit=100&orderBy=updated&orderDir=desc&currency=USD";
+                    if (cursor != null)
+                    {
+                        endpoint += $"&cursor={cursor}";
+                    }
+
+                    HttpResponseMessage response = await _httpClient.GetAsync(endpoint);
+                    response.EnsureSuccessStatusCode();
+                    string data = await response.Content.ReadAsStringAsync();
+
+                    var (skins, nextCursor) = ParseJsonToSkins(data);
+
+                    await _context.Skins.AddRangeAsync(skins);
+                    await _context.SaveChangesAsync();
+
+                    totalScraped += skins.Count;
+                    _logger.LogInformation(cursor);
+                    _logger.LogInformation($"Scraped {skins.Count} skins. Total: {totalScraped}");
+
+                    cursor = nextCursor;
+                }
+                catch (HttpRequestException e)
+                {
+                    _logger.LogError($"Error fetching data from DMarket API: {e.Message}");
+                    break;
+                }
+                catch (JsonException e)
+                {
+                    _logger.LogError($"Error parsing JSON data: {e.Message}");
+                    break;
+                }
+                catch (Exception e)
+                {
+                    _logger.LogError($"Unexpected error occurred: {e.Message}");
+                    break;
+                }
+            } while (cursor != null);
+
+            _logger.LogInformation($"Scraping completed. Total skins scraped: {totalScraped}");
+        }
+
+        public async Task ScrapeStickers()
+        {
+            string? cursor = null;
+            int totalScraped = 0;
+            do
+            {
+                try
+                {
+                    string endpoint = $"exchange/v1/market/items?gameId=a8db&title=sticker&limit=100&orderBy=updated&orderDir=desc&currency=USD";
                     if (cursor != null)
                     {
                         endpoint += $"&cursor={cursor}";

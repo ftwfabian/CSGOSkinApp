@@ -56,6 +56,13 @@ ScaffoldingReadMe.txt
 *.ldf
 *.ndf
 
+# SQLite temp files
+*.db-shm
+*.db-wal
+
+#SQLite database
+*.db
+
 # Node.js / Svelte
 ClientApp/node_modules/
 ClientApp/.svelte-kit/
